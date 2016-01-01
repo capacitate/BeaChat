@@ -8,18 +8,28 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 
-//import org.altbeacon.beacon.BeaconManager;
-//import org.altbeacon.beacon.BeaconParser;
-//import org.altbeacon.beacon.Region;
+import org.altbeacon.beacon.Beacon;
+import org.altbeacon.beacon.BeaconConsumer;
+import org.altbeacon.beacon.BeaconManager;
+import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.MonitorNotifier;
+import org.altbeacon.beacon.RangeNotifier;
+import org.altbeacon.beacon.Region;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BeaconConsumer{
 
     private ListView lv;
     private ArrayList<HashMap<String, String>> beaconList;
-//    private BeaconManager beaconManager;
+    private BeaconManager beaconManager;
+    private final int STOP = 10;
+    private static final ScheduledExecutorService delayed_work = Executors.newSingleThreadScheduledExecutor();
 
     private String TAG = "MainActivity";
 
@@ -29,8 +39,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         lv = (ListView)findViewById(R.id.near_beacon_list);
-//        beaconManager = BeaconManager.getInstanceForApplication(this);
-//        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:0-3=4c000215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        beaconManager = BeaconManager.getInstanceForApplication(this);
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:0-3=4c000215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        beaconManager.bind(this);
     }
 
     @Override
@@ -55,15 +66,60 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_refresh:
                 //find near beacon list and make a HashMap<String, String>
                 Log.i(TAG, "action_refresh");
-//                try {
-//                    beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
-//                } catch (RemoteException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+//                    final Region myRegion = new Region("myRangingUniqueId", null, null, null);
+                    beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+//                    beaconManager.stopRangingBeaconsInRegion(myRegion);
+                    Runnable stop_scan = new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Log.i(TAG, "stop the ranging");
+                                beaconManager.stopRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    };
+
+                    delayed_work.schedule(stop_scan, STOP, TimeUnit.SECONDS);
+
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
                 return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onBeaconServiceConnect() {
+        Log.i(TAG, "onBeaconServiceConnect");
+
+        beaconManager.setMonitorNotifier(new MonitorNotifier() {
+            @Override
+            public void didEnterRegion(Region region) {
+                Log.i(TAG, "did Enter the Region");
+            }
+
+            @Override
+            public void didExitRegion(Region region) {
+                Log.i(TAG, "did Exit the Region");
+            }
+
+            @Override
+            public void didDetermineStateForRegion(int i, Region region) {
+
+            }
+        });
+
+        beaconManager.setRangeNotifier(new RangeNotifier() {
+            @Override
+            public void didRangeBeaconsInRegion(Collection<Beacon> collection, Region region) {
+                Log.i(TAG, "did RangeBeacons in Region");
+            }
+        });
     }
 }

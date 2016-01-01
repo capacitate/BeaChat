@@ -1,16 +1,36 @@
 package com.example.junhong.beachat;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.RemoteException;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
+
+//import org.altbeacon.beacon.BeaconManager;
+//import org.altbeacon.beacon.BeaconParser;
+//import org.altbeacon.beacon.Region;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
+
+    private ListView lv;
+    private ArrayList<HashMap<String, String>> beaconList;
+//    private BeaconManager beaconManager;
+
+    private String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        lv = (ListView)findViewById(R.id.near_beacon_list);
+//        beaconManager = BeaconManager.getInstanceForApplication(this);
+//        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:0-3=4c000215,i:4-19,i:20-21,i:22-23,p:24-24"));
     }
 
     @Override
@@ -28,10 +48,22 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        switch(id){
+            case R.id.action_settings:
+                return true;
 
-        return super.onOptionsItemSelected(item);
+            case R.id.action_refresh:
+                //find near beacon list and make a HashMap<String, String>
+                Log.i(TAG, "action_refresh");
+//                try {
+//                    beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+//                } catch (RemoteException e) {
+//                    e.printStackTrace();
+//                }
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

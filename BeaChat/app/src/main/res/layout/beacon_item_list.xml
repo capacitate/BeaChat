@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/beacon_ID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/beacon_id"/>
+    <TextView
+        android:id="@+id/major"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/major"/>
+    <TextView
+        android:id="@+id/minor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/minor"/>
+    <TextView
+        android:id="@+id/rssi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/rssi"/>
+    <TextView
+        android:id="@+id/tx_pw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tx_pw"/>
+    <TextView
+        android:id="@+id/proximity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/proximity"/>
+
+</LinearLayout>

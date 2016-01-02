@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer{
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        switch(id){its
+        switch(id){
             case R.id.action_settings:
                 return true;
 

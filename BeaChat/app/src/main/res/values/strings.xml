@@ -13,4 +13,7 @@
 
     <string name="refresh">Refresh beacon List</string>
     <string name="exp">exp </string>
+
+    <string name="chat">chat</string>
+    <string name="macro">macro</string>
 </resources>

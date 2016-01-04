@@ -66,6 +66,9 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer{
                 } catch(android.content.ActivityNotFoundException ex){
                     Toast.makeText(getActivity(), "There are no email clients installed.", Toast.LENGTH_SHORT).show();
                 }*/
+                HashMap<String, String> hash = (HashMap<String, String>)lv.getItemAtPosition(position);
+                String beacon_uuid = hash.get(TAG_UUID);
+                Log.i(TAG, "onItemClick UUID : " + beacon_uuid);
             }
         });
 

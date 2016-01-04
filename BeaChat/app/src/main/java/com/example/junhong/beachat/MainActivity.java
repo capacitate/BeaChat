@@ -1,5 +1,8 @@
 package com.example.junhong.beachat;
 
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
@@ -7,7 +10,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -36,13 +41,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer{
     private final int STOP = 10;
     private static final ScheduledExecutorService delayed_work = Executors.newSingleThreadScheduledExecutor();
 
-    private String TAG_UUID = "uuid";
-    private String TAG_MAJOR = "major";
-    private String TAG_MINOR = "minor";
-    private String TAG_RSSI = "rssi";
-    private String TAG_TXPW = "tx_pw";
-    private String TAG_PROXIMITY = "proximity";
-
     private String TAG = "MainActivity";
 
     @Override
@@ -67,8 +65,11 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer{
                     Toast.makeText(getActivity(), "There are no email clients installed.", Toast.LENGTH_SHORT).show();
                 }*/
                 HashMap<String, String> hash = (HashMap<String, String>)lv.getItemAtPosition(position);
-                String beacon_uuid = hash.get(TAG_UUID);
-                Log.i(TAG, "onItemClick UUID : " + beacon_uuid);
+                String beacon_uuid = hash.get(Constants.TAG_UUID);
+//                Log.i(TAG, "onItemClick UUID : " + beacon_uuid);
+
+                CustomDialog cd = new CustomDialog(MainActivity.this, beacon_uuid);
+                cd.show();
             }
         });
 
@@ -171,12 +172,12 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer{
 
                         HashMap<String, String> beacon = new HashMap<String,String>();
 
-                        beacon.put(TAG_UUID, uuid);
-                        beacon.put(TAG_MAJOR, major);
-                        beacon.put(TAG_MINOR, minor);
-                        beacon.put(TAG_PROXIMITY, proximity);
-                        beacon.put(TAG_TXPW, tx_pw);
-                        beacon.put(TAG_RSSI, rssi);
+                        beacon.put(Constants.TAG_UUID, uuid);
+                        beacon.put(Constants.TAG_MAJOR, major);
+                        beacon.put(Constants.TAG_MINOR, minor);
+                        beacon.put(Constants.TAG_PROXIMITY, proximity);
+                        beacon.put(Constants.TAG_TXPW, tx_pw);
+                        beacon.put(Constants.TAG_RSSI, rssi);
 
                         beaconList.add(beacon);
                     }
@@ -194,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer{
 
     public void updateList(){
         lv_adapter = new SimpleAdapter(getApplicationContext(), beaconList, R.layout.beacon_item_list,
-                new String[]{TAG_UUID, TAG_MAJOR, TAG_MINOR, TAG_RSSI, TAG_TXPW, TAG_PROXIMITY},
+                new String[]{Constants.TAG_UUID, Constants.TAG_MAJOR, Constants.TAG_MINOR, Constants.TAG_RSSI, Constants.TAG_TXPW, Constants.TAG_PROXIMITY},
                 new int[] {R.id.uuid_content, R.id.major_content, R.id.minor_content, R.id.rssi_content, R.id.tx_pw_content, R.id.proximity_content});
 
         lv.setAdapter(lv_adapter);
@@ -204,5 +205,38 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer{
     public void onDestroy(){
         super.onDestroy();
         beaconManager.unbind(this);
+    }
+
+    public class CustomDialog extends Dialog {
+        private Button chat_btn;
+        private String TAG = "CustomDialog";
+        private String beacon_uuid;
+        private Context mContext;
+
+        public CustomDialog(Context context, String uuid) {
+            super(context);
+            mContext = context;
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
+            setContentView(R.layout.custom_dialog);
+
+            beacon_uuid = uuid;
+
+            chat_btn = (Button)findViewById(R.id.chat);
+            chat_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "onClick is bring the chatting activity");
+                    startSignIn(beacon_uuid);
+                    dismiss();
+                }
+            });
+        }
+
+        public void startSignIn(String beaconid) {
+            Intent intent = new Intent(mContext, LoginActivity.class);
+            intent.putExtra(Constants.TAG_UUID, beaconid);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivityForResult(intent, 1);
+        }
     }
 }

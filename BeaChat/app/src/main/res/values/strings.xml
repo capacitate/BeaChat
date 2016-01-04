@@ -16,4 +16,12 @@
 
     <string name="chat">chat</string>
     <string name="macro">macro</string>
+
+    <string name="title_activity_login">LOGIN ACTIVITY</string>
+    <string name="prompt_username">What\'s your nickname?</string>
+    <string name="action_sign_in">Join</string>
+    <string name="action_sign_in_short">Join</string>
+
+    <string name="error_field_required">This field is required</string>
+    <string name="chat_activity">chatting room</string>
 </resources>

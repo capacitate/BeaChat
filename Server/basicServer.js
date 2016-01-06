@@ -12,9 +12,11 @@ function callback(err, db){
 		
 		//Get the documents collection 
 		var collection = db.collection('users');
+		
+		var old = -40;
 
 		//Create some users
-		var user1 = {user_id: "ChangHyun", age: 35, status: "S"};
+		var user1 = {user_id: "What", age: old, status: "S"};
 		var user2 = {user_id: "YeonJu", age: 35, status: "S"};
 
 		//Insert some users
